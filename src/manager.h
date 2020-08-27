@@ -3,19 +3,20 @@
 
 #include <QMainWindow>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class Manager; }
-QT_END_NAMESPACE
+namespace Ui {
+class Manager;
+}
 
 class Manager : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Manager(QWidget *parent = nullptr);
+    explicit Manager(QWidget *parent = nullptr);
     ~Manager();
 
 private:
     Ui::Manager *ui;
 };
+
 #endif // MANAGER_H

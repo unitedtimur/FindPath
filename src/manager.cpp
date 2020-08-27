@@ -1,7 +1,7 @@
 #include "manager.h"
-#include "./ui_manager.h"
+#include "ui_manager.h"
 
-Manager::Manager(QWidget *parent):
+Manager::Manager(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Manager)
 {
@@ -12,4 +12,3 @@ Manager::~Manager()
 {
     delete ui;
 }
-

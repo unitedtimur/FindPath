@@ -26,19 +26,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+SET(HEADERS
+    src/manager.h
+)
+
+SET(SOURCES
+    src/main.cpp
+    src/manager.cpp
+    src/manager.ui)
+
 if(ANDROID)
   add_library(FindPath SHARED
-    main.cpp
-    manager.cpp
-    manager.h
-    manager.ui
+    ${HEADERS}
+    ${SOURCES}
   )
 else()
   add_executable(FindPath
-    main.cpp
-    manager.cpp
-    manager.h
-    manager.ui
+    ${HEADERS}
+    ${SOURCES}
   )
 endif()
 
