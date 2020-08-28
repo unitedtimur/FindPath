@@ -26,19 +26,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+SET(HEADERS
+    src/manager.h
+    src/graphicscell.h
+    src/graphicsfield.h
+    src/movescene.h
+    src/configuration.h
+)
+
+SET(SOURCES
+    src/main.cpp
+    src/manager.cpp
+    src/manager.ui
+    src/graphicscell.cpp
+    src/graphicsfield.cpp
+    src/movescene.cpp
+)
+
 if(ANDROID)
   add_library(FindPath SHARED
-    main.cpp
-    manager.cpp
-    manager.h
-    manager.ui
+    ${HEADERS}
+    ${SOURCES}
   )
 else()
   add_executable(FindPath
-    main.cpp
-    manager.cpp
-    manager.h
-    manager.ui
+    ${HEADERS}
+    ${SOURCES}
   )
 endif()
 
