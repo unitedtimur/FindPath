@@ -1,12 +1,12 @@
 #include <QApplication>
-#include <QWidget>
+#include "manager.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QWidget widget;
-    widget.show();
+    Manager manager;
+    manager.show();
 
     QApplication::exec();
 

@@ -28,12 +28,20 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 SET(HEADERS
     src/manager.h
+    src/graphicscell.h
+    src/graphicsfield.h
+    src/movescene.h
+    src/configuration.h
 )
 
 SET(SOURCES
     src/main.cpp
     src/manager.cpp
-    src/manager.ui)
+    src/manager.ui
+    src/graphicscell.cpp
+    src/graphicsfield.cpp
+    src/movescene.cpp
+)
 
 if(ANDROID)
   add_library(FindPath SHARED
