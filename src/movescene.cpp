@@ -1,16 +1,18 @@
 #include "movescene.h"
 #include "configuration.h"
+#include "graphicscell.h"
 
 #include <QObject>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRectItem>
+#include <QWheelEvent>
 #include <QDebug>
 #include <iostream>
+#include <math.h>
 
 MoveScene::MoveScene(QObject* parent) :
     QGraphicsScene(parent)
 {
-
 }
 
 void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -35,14 +37,11 @@ void MoveScene::generatedField(const qint32& w, const qint32& h)
     {
         for (qint32 y = 0; y < h; ++y)
         {
-            this->addRect(x * Configuration::SIZE_CELL,
-                          y * Configuration::SIZE_CELL,
-                          Configuration::SIZE_CELL,
-                          Configuration::SIZE_CELL,
-                          Qt::SolidLine,
-                          QBrush(QColor(221, 247, 92), Qt::SolidPattern));
+            this->addItem(new GraphicsCell(QRectF(x * Configuration::SIZE_CELL,
+                                                  y * Configuration::SIZE_CELL,
+                                                  Configuration::SIZE_CELL,
+                                                  Configuration::SIZE_CELL),
+                                           GraphicsCell::Status::JustCell));
         }
     }
-
-    this->setSceneRect(this->itemsBoundingRect());
 }

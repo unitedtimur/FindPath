@@ -9,6 +9,9 @@ class Manager;
 
 class QIntValidator;
 class MoveScene;
+class GameView;
+class QCloseEvent;
+class QResizeEvent;
 
 class Manager : public QMainWindow
 {
@@ -22,12 +25,19 @@ public:
     Q_SLOT void generateButtonClicked();
 
 protected:
+    void writeSettings();
+    void readSettings();
+
     void handleError(const QString& errorMessage);
+
+    virtual void closeEvent(QCloseEvent* event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
     Ui::Manager *ui;
 
     QIntValidator* validator;
+    GameView* view;
     MoveScene* scene;
 };
 

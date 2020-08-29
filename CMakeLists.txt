@@ -29,9 +29,9 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 SET(HEADERS
     src/manager.h
     src/graphicscell.h
-    src/graphicsfield.h
     src/movescene.h
     src/configuration.h
+    src/gameview.h
 )
 
 SET(SOURCES
@@ -39,8 +39,8 @@ SET(SOURCES
     src/manager.cpp
     src/manager.ui
     src/graphicscell.cpp
-    src/graphicsfield.cpp
     src/movescene.cpp
+    src/gameview.cpp
 )
 
 if(ANDROID)
