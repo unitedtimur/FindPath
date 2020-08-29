@@ -28,7 +28,7 @@ protected:
     void writeSettings();
     void readSettings();
 
-    void handleError(const QString& errorMessage);
+    Q_SLOT void handleError(const QString& errorMessage);
 
     virtual void closeEvent(QCloseEvent* event) override;
     virtual void resizeEvent(QResizeEvent* event) override;

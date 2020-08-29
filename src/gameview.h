@@ -7,6 +7,8 @@ class QWheelEvent;
 
 class GameView : public QGraphicsView
 {
+    Q_OBJECT
+
 public:
     explicit GameView(QWidget* parent = nullptr);
 

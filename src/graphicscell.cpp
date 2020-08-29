@@ -1,8 +1,8 @@
 #include "graphicscell.h"
 #include "configuration.h"
 
-GraphicsCell::GraphicsCell(const QRectF &rect, const Status& status):
-    QGraphicsRectItem(rect)
+GraphicsCell::GraphicsCell(const Status& status):
+    QGraphicsRectItem(nullptr)
 {
     this->status = status;
     this->update();
@@ -14,9 +14,14 @@ void GraphicsCell::setStatus(const GraphicsCell::Status &status)
     this->update();
 }
 
-const GraphicsCell::Status &GraphicsCell::getStatus() const
+GraphicsCell::Status GraphicsCell::getStatus() const
 {
     return status;
+}
+
+qint32 GraphicsCell::code()
+{
+    return cod;
 }
 
 void GraphicsCell::update()
@@ -35,7 +40,30 @@ void GraphicsCell::update()
     case Status::BarrierCell:
         this->setBrush(QBrush(QColor(61, 61, 61), Qt::SolidPattern));
         break;
+    case Status::PathCell:
+        this->setBrush(QBrush(QColor(52, 198, 247), Qt::SolidPattern));
+        break;
     }
 
     this->setPen(QPen(Qt::SolidPattern));
+}
+
+void GraphicsCell::setX(const qreal &x)
+{
+    this->x = x;
+}
+
+void GraphicsCell::setY(const qreal &y)
+{
+    this->y = y;
+}
+
+qreal GraphicsCell::getX() const
+{
+    return x;
+}
+
+qreal GraphicsCell::getY() const
+{
+    return y;
 }

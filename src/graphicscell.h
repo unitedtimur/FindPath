@@ -10,27 +10,31 @@ class GraphicsCell : public QGraphicsRectItem
 public:
     enum class Status : quint16
     {
-        JustCell    = 0b0001,
-        StartCell   = 0b0010,
-        FinishCell  = 0b0100,
-        BarrierCell = 0b1000
+        JustCell    = 0b00001,
+        StartCell   = 0b00010,
+        FinishCell  = 0b00100,
+        BarrierCell = 0b01000,
+        PathCell    = 0b10000
     };
-
-    explicit GraphicsCell(const QRectF& rect, const Status& status);
-
-
+    explicit GraphicsCell() = default;
+    explicit GraphicsCell(const Status& status);
 
     void setStatus(const Status& status);
-    const Status& getStatus() const;
+    Status getStatus() const;
+    qint32 code();
 
     void update();
+    qint32 cod;
+
+    void setX(const qreal& x);
+    void setY(const qreal& y);
+
+    qreal getX() const;
+    qreal getY() const;
 
 private:
-    int x;
-    int y;
-    int f;
-    int w;
-    int h;
+    qreal x;
+    qreal y;
 
     Status status;
 };

@@ -32,6 +32,7 @@ SET(HEADERS
     src/movescene.h
     src/configuration.h
     src/gameview.h
+    src/bfslogic.h
 )
 
 SET(SOURCES
@@ -41,6 +42,7 @@ SET(SOURCES
     src/graphicscell.cpp
     src/movescene.cpp
     src/gameview.cpp
+    src/bfslogic.cpp
 )
 
 if(ANDROID)

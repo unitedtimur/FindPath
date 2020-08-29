@@ -42,6 +42,7 @@ Manager::Manager(QWidget *parent) :
     // Connect signal by generate button with slot
     connect(this->ui->generateButton, &QPushButton::clicked, this, &Manager::generateButtonClicked);
     connect(this, &Manager::generateField, scene, &MoveScene::generatedField);
+    connect(scene, &MoveScene::handleError, this, &Manager::handleError);
 }
 
 Manager::~Manager()
