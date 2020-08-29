@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 
 class QObject;
+class QWheelEvent;
 
 class MoveScene : public QGraphicsScene
 {
