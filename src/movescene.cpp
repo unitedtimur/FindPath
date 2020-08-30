@@ -6,11 +6,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRectItem>
 #include <QWheelEvent>
-#include <QDebug>
-#include <iostream>
-#include <QQueue>
 #include <queue>
-
 #include <vector>
 #include <list>
 
@@ -18,47 +14,21 @@
 
 using namespace std;
 
-class Graph
-{
-    int numVertices;
-    QList<int> *adjLists;
-    bool *visited;
-
-public:
-    Graph(int V);
-    void addEdge(int src, int dest);
-    void DFS(int vertex);
-};
-
-Graph::Graph(int vertices)
-{
-    numVertices = vertices;
-    adjLists = new QList<int>[vertices];
-    visited = new bool[vertices];
-}
-
-void Graph::addEdge(int src, int dest)
-{
-    adjLists[src].push_front(dest);
-}
-
-void Graph::DFS(int vertex)
-{
-
-    visited[vertex] = true;
-    QList<int> adjList = adjLists[vertex];
-
-    std::cout << vertex << " ";
-
-    QList<int>::iterator i;
-    for(i = adjList.begin(); i != adjList.end(); ++i)
-        if(!visited[*i])
-            DFS(*i);
-}
-
 MoveScene::MoveScene(QObject* parent) :
-    QGraphicsScene(parent)
+    QGraphicsScene(parent),
+    bfsLogic(nullptr)
 {
+}
+
+MoveScene::~MoveScene()
+{
+    delete bfsLogic;
+
+    for (auto& row : this->cells)
+    {
+        for (auto& column : row)
+            delete column;
+    }
 }
 
 void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -67,160 +37,79 @@ void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     {
         QVector<QVector<GraphicsCell*>> cells = this->getCells();
 
-        GraphicsCell* rect =  dynamic_cast<GraphicsCell*>(itemAt(mouseEvent->scenePos(), QTransform()));
+        GraphicsCell* rect = dynamic_cast<GraphicsCell*>(itemAt(mouseEvent->scenePos(), QTransform()));
 
         if (!rect)
             return;
 
-        switch (rect->getStatus())
+        if (rect->getStatus() & GraphicsCell::Status::JustCell)
         {
-        case GraphicsCell::Status::JustCell:
-            rect->setStatus(GraphicsCell::Status::BarrierCell);
-            break;
-        case GraphicsCell::Status::BarrierCell:
             rect->setStatus(GraphicsCell::Status::StartCell);
-            break;
-        case GraphicsCell::Status::StartCell:
-            rect->setStatus(GraphicsCell::Status::FinishCell);
-            bfs(this->w, this->h);
-            break;
-        case GraphicsCell::Status::FinishCell:
-            rect->setStatus(GraphicsCell::Status::JustCell);
-            break;
         }
     }
 }
 
 void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    //BFSLogic bfcLogic(this->getCells(), this->w, this->h);
-}
-
-struct Point
-{
-public:
-    explicit Point()
-    {
-        x = 0;
-        y = 0;
-        code = 0;
-    }
-    explicit Point(int y, int x, int code)
-    {
-        this->x = x;
-        this->y = y;
-        this->code = code;
-    }
-
-    int x;
-    int y;
-    int code;
-};
-
-void MoveScene::bfs(qint32 w, qint32 h)
-{
     const auto parse = this->getCells();
 
-    queue<GraphicsCell*> cells;
-    vector<vector<Point>> matrixPath(h, vector<Point>(w));
-
-    qint32 cellY;
-    qint32 cellX;
-
-    for (const auto& row : parse)
+    auto findCell = [&](const GraphicsCell::Status& status) -> GraphicsCell*
     {
-        for (const auto& column : row)
+        for (const auto& row : parse)
         {
-            if (column->getStatus() == GraphicsCell::Status::StartCell)
+            for (const auto& column : row)
             {
-                cells.push(column);
-            }
-            else if (column->getStatus() == GraphicsCell::Status::BarrierCell)
-            {
-                cellY = column->getY();
-                cellX = column->getX();
-
-                matrixPath[cellY][cellX] = Point(cellY, cellX, -1);
+                if (column->getStatus() & status)
+                    return column;
             }
         }
-    }
 
-    matrixPath[cells.front()->getY()][cells.front()->getX()] = Point(cells.front()->getY(), cells.front()->getX(), 1);
+        return nullptr;
+    };
 
-    while (!cells.empty())
-    {
-        GraphicsCell* cell = cells.front();
+    const auto startCell = findCell(GraphicsCell::Status::StartCell);
 
-        cellY = cell->getY();
-        cellX = cell->getX();
-
-        if (cellY != 0 && matrixPath[cellY - 1][cellX].code == 0)
-        {
-            matrixPath[cellY - 1][cellX] = Point(cellY, cellX, matrixPath[cellY][cellX].code + 1);
-            cells.push(parse[cellY - 1][cellX]);
-
-            if (cells.back()->getStatus() == GraphicsCell::Status::FinishCell)
-                break;
-        }
-
-        if (cellY != parse.size() - 1 && matrixPath[cellY + 1][cellX].code == 0)
-        {
-            matrixPath[cellY + 1][cellX] = Point(cellY, cellX, matrixPath[cellY][cellX].code + 1);
-            cells.push(parse[cellY + 1][cellX]);
-
-            if (cells.back()->getStatus() == GraphicsCell::Status::FinishCell)
-                break;
-        }
-
-        if (cellX != 0 && matrixPath[cellY][cellX - 1].code == 0)
-        {
-            matrixPath[cellY][cellX - 1] = Point(cellY, cellX, matrixPath[cellY][cellX].code + 1);
-            cells.push(parse[cellY][cellX - 1]);
-
-            if (cells.back()->getStatus() == GraphicsCell::Status::FinishCell)
-                break;
-        }
-
-        if (cellX != parse[0].size() - 1 && matrixPath[cellY][cellX + 1].code == 0)
-        {
-            matrixPath[cellY][cellX + 1] = Point(cellY, cellX, matrixPath[cellY][cellX].code + 1);
-            cells.push(parse[cellY][cellX + 1]);
-
-            if (cells.back()->getStatus() == GraphicsCell::Status::FinishCell)
-                break;
-        }
-
-        cells.pop();
-    }
-
-    if (cells.empty())
-    {
-        emit handleError("Невозможно построить путь");
+    if (!startCell)
         return;
-    }
 
-    cellX = cells.back()->getX();
-    cellY = cells.back()->getY();
+    const auto finishCell = dynamic_cast<GraphicsCell*>(itemAt(event->scenePos(), QTransform()));
 
-    qint32 currentNumber = matrixPath[cellY][cellX].code;
+    if (!finishCell)
+        return;
 
-    for (qint32 i = 0; i < currentNumber; ++i)
+    if (startCell != finishCell && !(finishCell->getStatus() & GraphicsCell::Status::BarrierCell))
     {
-        parse[cellY][cellX]->setStatus(GraphicsCell::Status::PathCell);
+        for (const auto it : this->memorablePathCells)
+        {
+            it->setStatus(GraphicsCell::Status::JustCell);
+        }
 
-        qint32 tempX = cellX;
-        qint32 tempY = cellY;
+        memorablePathCells.clear();
 
-        cellY = matrixPath[tempY][tempX].y;
-        cellX = matrixPath[tempY][tempX].x;
+        finishCell->setStatus(GraphicsCell::Status::FinishCell);
+
+        memorablePathCells.push_back(finishCell);
+        this->bfs();
     }
+}
 
+void MoveScene::bfs()
+{
+    bfsLogic = new BFSLogic(this->getCells(), this->memorablePathCells, this->w, this->h);
+
+    // Connect bfsLogic for handle error with slot by MoveScene
+    connect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
+
+    // Build path
+    bfsLogic->logic();
+
+    // Disconnect bfcLogic handle error signal with handledError slot
+    disconnect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
 }
 
 void MoveScene::generatedField(const qint32& w, const qint32& h)
 {
     this->clear();
-
     this->w = w;
     this->h = h;
 
@@ -242,9 +131,34 @@ void MoveScene::generatedField(const qint32& w, const qint32& h)
             this->addItem(cells[y][x]);
         }
     }
+
+    srand(time(0));
+
+    this->generateBarriers();
 }
 
-QVector<QVector<GraphicsCell*>> MoveScene::getCells()
+void MoveScene::handledError(const QString &error)
+{
+    emit handleError(error);
+}
+
+void MoveScene::generateBarriers()
+{
+    const auto parse = this->getCells();
+
+    for (const auto& row : parse)
+    {
+        for (const auto& column : row)
+        {
+            if (rand() % 3 == 0)
+            {
+                column->setStatus(GraphicsCell::Status::BarrierCell);
+            }
+        }
+    }
+}
+
+QVector<QVector<GraphicsCell*>>& MoveScene::getCells()
 {
     return cells;
 }

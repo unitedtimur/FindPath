@@ -34,10 +34,13 @@ Manager::Manager(QWidget *parent) :
     this->ui->widthLineEdit->setValidator(validator);
     this->ui->heightLineEdit->setValidator(validator);
 
+    this->ui->textEdit->resize(100, 60);
+
     // Set to gameLayout GameView
     this->ui->gameLayout->addWidget(this->view);
     this->view->resize(300, 300);
     this->view->setScene(this->scene);
+    this->view->setRenderHint(QPainter::HighQualityAntialiasing);
 
     // Connect signal by generate button with slot
     connect(this->ui->generateButton, &QPushButton::clicked, this, &Manager::generateButtonClicked);

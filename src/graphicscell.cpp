@@ -19,11 +19,6 @@ GraphicsCell::Status GraphicsCell::getStatus() const
     return status;
 }
 
-qint32 GraphicsCell::code()
-{
-    return cod;
-}
-
 void GraphicsCell::update()
 {
     switch (status)
@@ -48,22 +43,22 @@ void GraphicsCell::update()
     this->setPen(QPen(Qt::SolidPattern));
 }
 
-void GraphicsCell::setX(const qreal &x)
+void GraphicsCell::setX(const qint32 &x)
 {
     this->x = x;
 }
 
-void GraphicsCell::setY(const qreal &y)
+void GraphicsCell::setY(const qint32 &y)
 {
     this->y = y;
 }
 
-qreal GraphicsCell::getX() const
+qint32 GraphicsCell::getX() const
 {
     return x;
 }
 
-qreal GraphicsCell::getY() const
+qint32 GraphicsCell::getY() const
 {
     return y;
 }

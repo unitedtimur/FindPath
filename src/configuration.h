@@ -12,6 +12,8 @@ namespace Configuration
     static const QString ORGANIZATION = "UnitedTimurCompany (c)";
     static const QString APPLICATION = "FindPath";
 
+    static const QString ERROR_NO_PATH = "Невозможно построить путь!";
+
 }
 
 #endif // CONFIGURATION_H

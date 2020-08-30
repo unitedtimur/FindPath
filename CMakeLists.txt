@@ -33,6 +33,7 @@ SET(HEADERS
     src/configuration.h
     src/gameview.h
     src/bfslogic.h
+    src/point.h
 )
 
 SET(SOURCES

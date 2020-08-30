@@ -6,6 +6,7 @@
 class QObject;
 class QWheelEvent;
 class GraphicsCell;
+class BFSLogic;
 
 class MoveScene : public QGraphicsScene
 {
@@ -13,25 +14,28 @@ class MoveScene : public QGraphicsScene
 
 public:
     explicit MoveScene(QObject* parent = nullptr);
-
-    Q_SLOT void generatedField(const qint32& w, const qint32& h);
+    ~MoveScene();
 
     Q_SIGNAL void handleError(const QString& error);
+    Q_SLOT void handledError(const QString& error);
+
+    void generatedField(const qint32& w, const qint32& h);
 
 protected:
-    QVector<QVector<GraphicsCell*>> getCells();
+    QVector<QVector<GraphicsCell*>>& getCells();
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-
-    Q_SIGNAL void startBFS(qint32 w, qint32 h);
-    Q_SLOT void bfs(qint32 w, qint32 h);
+    void generateBarriers();
+    void bfs();
 
 private:
     QVector<QVector<GraphicsCell*>> cells;
+    QVector<GraphicsCell*> memorablePathCells;
     qint32 w;
     qint32 h;
+    BFSLogic* bfsLogic;
 };
 
 #endif // MOVESCENE_H
