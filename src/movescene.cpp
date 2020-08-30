@@ -146,6 +146,18 @@ void MoveScene::bfs(qint32 w, qint32 h)
                 break;
         }
 
+        for (int i = 0; i < h; ++i)
+        {
+            for (int j = 0; j < w; ++j)
+            {
+                std::cout << matrixPath[i][j] << " ";
+            }
+
+            std::cout << std::endl;
+        }
+
+        std::cout << std::endl << std::flush;
+
         if (cell->getY() != parse.size() - 1 && matrixPath[cell->getY() + 1][cell->getX()] == 0)
         {
             matrixPath[cell->getY() + 1][cell->getX()] = matrixPath[cell->getY()][cell->getX()] + 1;
@@ -246,7 +258,7 @@ void MoveScene::generatedField(const qint32& w, const qint32& h)
     this->w = w;
     this->h = h;
 
-    cells.resize(this->w);
+    cells.resize(this->h);
 
     for (qint32 y = 0; y < this->h; ++y)
     {
