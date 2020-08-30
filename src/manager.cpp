@@ -1,6 +1,11 @@
 #include "manager.h"
 #include "ui_manager.h"
 
+#include "graphicscell.h"
+#include "gameview.h"
+#include "movescene.h"
+#include "configuration.h"
+
 #include <QValidator>
 #include <QScreen>
 #include <QMessageBox>
@@ -11,10 +16,7 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QResizeEvent>
-#include "graphicscell.h"
-#include "gameview.h"
-#include "movescene.h"
-#include "configuration.h"
+
 
 Manager::Manager(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +34,7 @@ Manager::Manager(QWidget *parent) :
     // Set window icon
     this->setWindowIcon(QIcon(":/icon.png"));
 
+    // Disable frame
     this->ui->lineEdit->setFrame(false);
 
     // Set validator for width and height lines edit
