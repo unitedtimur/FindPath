@@ -2,6 +2,7 @@
 #define MOVESCENE_H
 
 #include <QGraphicsScene>
+#include "graphicscell.h"
 
 class QObject;
 class QWheelEvent;
@@ -17,6 +18,7 @@ public:
     ~MoveScene();
 
     Q_SIGNAL void handleError(const QString& error);
+    Q_SIGNAL void clearHandleError();
     Q_SLOT void handledError(const QString& error);
 
     void generatedField(const qint32& w, const qint32& h);
@@ -26,6 +28,8 @@ protected:
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+    GraphicsCell* findCell(const GraphicsCell::Status& status);
 
     void generateBarriers();
     void bfs();

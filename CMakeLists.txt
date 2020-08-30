@@ -44,6 +44,7 @@ SET(SOURCES
     src/movescene.cpp
     src/gameview.cpp
     src/bfslogic.cpp
+    src/resource.qrc
 )
 
 if(ANDROID)

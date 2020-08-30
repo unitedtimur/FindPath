@@ -1,6 +1,6 @@
 #include "movescene.h"
 #include "configuration.h"
-#include "graphicscell.h"
+#include "bfslogic.h"
 
 #include <QObject>
 #include <QGraphicsSceneMouseEvent>
@@ -9,8 +9,6 @@
 #include <queue>
 #include <vector>
 #include <list>
-
-#include "bfslogic.h"
 
 using namespace std;
 
@@ -46,28 +44,30 @@ void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         {
             rect->setStatus(GraphicsCell::Status::StartCell);
         }
+        else if (!(rect->getStatus() & GraphicsCell::Status::BarrierCell))
+        {
+            const auto startCell = findCell(GraphicsCell::Status::StartCell);
+
+            if (!startCell)
+                return;
+
+            startCell->setStatus(GraphicsCell::Status::JustCell);
+            rect->setStatus(GraphicsCell::Status::StartCell);
+
+            for (const auto& it : this->memorablePathCells)
+            {
+                it->setStatus(GraphicsCell::Status::JustCell);
+            }
+
+            memorablePathCells.clear();
+        }
     }
 }
 
 void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     const auto parse = this->getCells();
-
-    auto findCell = [&](const GraphicsCell::Status& status) -> GraphicsCell*
-    {
-        for (const auto& row : parse)
-        {
-            for (const auto& column : row)
-            {
-                if (column->getStatus() & status)
-                    return column;
-            }
-        }
-
-        return nullptr;
-    };
-
-    const auto startCell = findCell(GraphicsCell::Status::StartCell);
+    const auto startCell = this->findCell(GraphicsCell::Status::StartCell);
 
     if (!startCell)
         return;
@@ -79,7 +79,7 @@ void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if (startCell != finishCell && !(finishCell->getStatus() & GraphicsCell::Status::BarrierCell))
     {
-        for (const auto it : this->memorablePathCells)
+        for (const auto& it : this->memorablePathCells)
         {
             it->setStatus(GraphicsCell::Status::JustCell);
         }
@@ -89,12 +89,29 @@ void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         finishCell->setStatus(GraphicsCell::Status::FinishCell);
 
         memorablePathCells.push_back(finishCell);
+
         this->bfs();
     }
 }
 
+GraphicsCell *MoveScene::findCell(const GraphicsCell::Status &status)
+{
+    for (const auto& row : this->getCells())
+    {
+        for (const auto& column : row)
+        {
+            if (column->getStatus() & status)
+                return column;
+        }
+    }
+
+    return nullptr;
+}
+
 void MoveScene::bfs()
 {
+    emit clearHandleError();
+
     bfsLogic = new BFSLogic(this->getCells(), this->memorablePathCells, this->w, this->h);
 
     // Connect bfsLogic for handle error with slot by MoveScene
@@ -112,6 +129,8 @@ void MoveScene::generatedField(const qint32& w, const qint32& h)
     this->clear();
     this->w = w;
     this->h = h;
+
+    memorablePathCells.clear();
 
     cells.resize(this->h);
 

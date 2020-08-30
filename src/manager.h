@@ -29,6 +29,7 @@ protected:
     void readSettings();
 
     Q_SLOT void handleError(const QString& errorMessage);
+    Q_SLOT void handleErrorToTextEdit(const QString& error);
 
     virtual void closeEvent(QCloseEvent* event) override;
     virtual void resizeEvent(QResizeEvent* event) override;

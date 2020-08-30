@@ -29,12 +29,15 @@ Manager::Manager(QWidget *parent) :
     this->setWindowTitle("FindPath");
     this->readSettings();
 
+    // Set window icon
+    this->setWindowIcon(QIcon(":/icon.png"));
+
+    this->ui->lineEdit->setFrame(false);
+
     // Set validator for width and height lines edit
     validator->setRange(1, 100);
     this->ui->widthLineEdit->setValidator(validator);
     this->ui->heightLineEdit->setValidator(validator);
-
-    this->ui->textEdit->resize(100, 60);
 
     // Set to gameLayout GameView
     this->ui->gameLayout->addWidget(this->view);
@@ -45,7 +48,8 @@ Manager::Manager(QWidget *parent) :
     // Connect signal by generate button with slot
     connect(this->ui->generateButton, &QPushButton::clicked, this, &Manager::generateButtonClicked);
     connect(this, &Manager::generateField, scene, &MoveScene::generatedField);
-    connect(scene, &MoveScene::handleError, this, &Manager::handleError);
+    connect(scene, &MoveScene::handleError, this, &Manager::handleErrorToTextEdit);
+    connect(scene, &MoveScene::clearHandleError, this, [&](){ this->ui->lineEdit->clear(); });
 }
 
 Manager::~Manager()
@@ -94,6 +98,11 @@ void Manager::readSettings()
 void Manager::handleError(const QString &errorMessage)
 {
     QMessageBox::critical(this, "Fatal error", errorMessage);
+}
+
+void Manager::handleErrorToTextEdit(const QString &error)
+{
+    this->ui->lineEdit->setText(error);
 }
 
 void Manager::closeEvent(QCloseEvent *event)
