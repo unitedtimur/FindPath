@@ -34,6 +34,7 @@ SET(HEADERS
     src/gameview.h
     src/bfslogic.h
     src/point.h
+    src/bfsrunnable.h
 )
 
 SET(SOURCES
@@ -45,6 +46,7 @@ SET(SOURCES
     src/gameview.cpp
     src/bfslogic.cpp
     src/resource.qrc
+    src/bfsrunnable.cpp
 )
 
 IF(WIN32)
