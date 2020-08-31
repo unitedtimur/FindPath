@@ -6,9 +6,12 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRectItem>
 #include <QWheelEvent>
+#include <QThreadPool>
 #include <queue>
 #include <vector>
 #include <list>
+
+#include "bfsrunnable.h"
 
 using namespace std;
 
@@ -20,7 +23,8 @@ MoveScene::MoveScene(QObject* parent) :
 
 MoveScene::~MoveScene()
 {
-    delete bfsLogic;
+    if (!bfsLogic)
+        delete bfsLogic;
 
     for (auto& row : this->cells)
     {
@@ -112,16 +116,23 @@ void MoveScene::bfs()
 {
     emit clearHandleError();
 
-    bfsLogic = new BFSLogic(this->getCells(), this->memorablePathCells, this->w, this->h);
+    bfsLogic = new BFSLogic(this->cells, this->memorablePathCells, this->w, this->h);
 
     // Connect bfsLogic for handle error with slot by MoveScene
     connect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
 
-    // Build path
-    bfsLogic->logic();
+    BFSRunnable bfsRunnable(bfsLogic);
+    bfsRunnable.setAutoDelete(false);
+
+    QThreadPool* threadPool = QThreadPool::globalInstance();
+    threadPool->start(&bfsRunnable);
 
     // Disconnect bfcLogic handle error signal with handledError slot
     disconnect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
+
+    threadPool->waitForDone();
+
+    delete bfsLogic;
 }
 
 void MoveScene::generatedField(const qint32& w, const qint32& h)
