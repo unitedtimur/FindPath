@@ -47,13 +47,21 @@ SET(SOURCES
     src/resource.qrc
 )
 
+IF(WIN32)
+        SET(GUI_TYPE WIN32)
+ENDIF(WIN32)
+
+IF (APPLE)
+        SET(GUI_TYPE MACOSX_BUNDLE)
+ENDIF (APPLE)
+
 if(ANDROID)
   add_library(FindPath SHARED
     ${HEADERS}
     ${SOURCES}
   )
 else()
-  add_executable(FindPath
+  add_executable(FindPath ${GUI_TYPE}
     ${HEADERS}
     ${SOURCES}
   )
