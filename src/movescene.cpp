@@ -37,8 +37,6 @@ void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() & Qt::LeftButton)
     {
-        QVector<QVector<GraphicsCell*>> cells = this->getCells();
-
         GraphicsCell* rect = dynamic_cast<GraphicsCell*>(itemAt(mouseEvent->scenePos(), QTransform()));
 
         if (!rect)
@@ -70,7 +68,6 @@ void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    const auto parse = this->getCells();
     const auto startCell = this->findCell(GraphicsCell::Status::StartCell);
 
     if (!startCell)
