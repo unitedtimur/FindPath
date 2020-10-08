@@ -127,10 +127,10 @@ void MoveScene::bfs()
     QThreadPool* threadPool = QThreadPool::globalInstance();
     threadPool->start(&bfsRunnable);
 
+    threadPool->waitForDone();
+
     // Disconnect bfcLogic handle error signal with handledError slot
     disconnect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
-
-    threadPool->waitForDone();
 
     delete bfsLogic;
 }
