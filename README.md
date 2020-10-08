@@ -1,7 +1,5 @@
 # FindPath
 
-## Breadth-first path search.
-
 The graphical application was written using the qt framework.
 
 ## Targets
