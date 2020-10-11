@@ -135,12 +135,8 @@ void MoveScene::logicalSearch()
         break;
     }
 
-    LogicalSearchRunnable bfsRunnable(search);
-    bfsRunnable.setAutoDelete(false);
-
-    QThreadPool* threadPool = QThreadPool::globalInstance();
-    threadPool->start(&bfsRunnable);
-    threadPool->waitForDone();
+    QThreadPool::globalInstance()->start(new LogicalSearchRunnable(search));
+    QThreadPool::globalInstance()->waitForDone();
 }
 
 void MoveScene::generatedField(const qint32& w, const qint32& h)
