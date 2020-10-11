@@ -1,27 +1,26 @@
-#include "bfslogic.h"
-#include "graphicscell.h"
-#include "configuration.h"
+#include "include/bfslogic.h"
+#include "include/graphicscell.h"
+#include "include/configuration.h"
 
 #include <queue>
 #include <vector>
 
 using namespace std;
 
-
 BFSLogic::BFSLogic(QVector<QVector<GraphicsCell*>>& cells, QVector<GraphicsCell*>& memorablePathCells, const qint32 &w, const qint32 &h) :
-    cells(cells),
-    memorablePathCells(memorablePathCells),
-    w(w),
-    h(h)
+    m_cells(cells),
+    m_memorablePathCells(memorablePathCells),
+    m_w(w),
+    m_h(h)
 {
 }
 
 void BFSLogic::logic()
 {
-    const QVector<QVector<GraphicsCell*>> parse = this->cells;
+    const QVector<QVector<GraphicsCell*>> parse = m_cells;
 
     queue<GraphicsCell*> cells;
-    vector<vector<Point>> matrixPath(h, vector<Point>(w));
+    vector<vector<Point>> matrixPath(m_h, vector<Point>(m_w));
 
     qint32 cellY;
     qint32 cellX;
@@ -117,7 +116,7 @@ void BFSLogic::logic()
     // If not path from start cell to finish cell
     if (cells.empty())
     {
-        emit handleError(Configuration::ERROR_NO_PATH);
+        emit handleError(configuration::ERROR_NO_PATH);
         return;
     }
 
@@ -130,7 +129,7 @@ void BFSLogic::logic()
     // Make the back path to start cell
     for (qint32 i = 0; i < currentNumber; ++i)
     {
-        memorablePathCells.push_back(parse[cellY][cellX]);
+        m_memorablePathCells.push_back(parse[cellY][cellX]);
 
         parse[cellY][cellX]->setStatus(GraphicsCell::Status::PathCell);
 
