@@ -26,6 +26,35 @@ Manager::Manager(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->init();
+}
+
+Manager::~Manager()
+{
+    delete ui;
+    delete view;
+    delete validator;
+    delete scene;
+}
+
+void Manager::generateButtonClicked()
+{
+    qint32 w = this->ui->widthLineEdit->text().toInt();
+    qint32 h = this->ui->heightLineEdit->text().toInt();
+
+    if (w == 0 || h == 0)
+    {
+        handleError(QString::fromUtf8(u8"Количество клеток не может равняться нулю!"));
+        return;
+    }
+
+    emit generateField(w, h);
+
+    this->view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void Manager::init()
+{
     // Set config for main window
     this->setWindowTitle("FindPath");
     this->readSettings();
@@ -52,30 +81,6 @@ Manager::Manager(QWidget *parent) :
     connect(this, &Manager::generateField, scene, &MoveScene::generatedField);
     connect(scene, &MoveScene::handleError, this, &Manager::handleErrorToTextEdit);
     connect(scene, &MoveScene::clearHandleError, this, [&](){ this->ui->lineEdit->clear(); });
-}
-
-Manager::~Manager()
-{
-    delete ui;
-    delete view;
-    delete validator;
-    delete scene;
-}
-
-void Manager::generateButtonClicked()
-{
-    qint32 w = this->ui->widthLineEdit->text().toInt();
-    qint32 h = this->ui->heightLineEdit->text().toInt();
-
-    if (w == 0 || h == 0)
-    {
-        handleError(QString::fromUtf8(u8"Количество клеток не может равняться нулю!"));
-        return;
-    }
-
-    emit generateField(w, h);
-
-    this->view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 void Manager::writeSettings()
