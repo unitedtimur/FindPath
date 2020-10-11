@@ -3,7 +3,7 @@
 
 #include <QString>
 
-namespace Configuration
+namespace configuration
 {
     static const qreal GRAPHIC_VIEW_WIDTH = 300;
     static const qreal GRAPHIC_VIEW_HEIGHT = 300;
@@ -13,6 +13,11 @@ namespace Configuration
     static const QString APPLICATION = "FindPath";
 
     static const QString ERROR_NO_PATH = "Нет такого пути!";
+
+    namespace images
+    {
+        static const QString ICON = ":/images/icon.png";
+    }
 
 }
 

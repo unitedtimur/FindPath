@@ -1,4 +1,4 @@
-#include "gameview.h"
+#include "include/gameview.h"
 
 #include <QWheelEvent>
 

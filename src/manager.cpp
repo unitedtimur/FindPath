@@ -1,10 +1,10 @@
-#include "manager.h"
+#include "include/manager.h"
 #include "ui_manager.h"
 
-#include "graphicscell.h"
-#include "gameview.h"
-#include "movescene.h"
-#include "configuration.h"
+#include "include/graphicscell.h"
+#include "include/gameview.h"
+#include "include/movescene.h"
+#include "include/configuration.h"
 
 #include <QValidator>
 #include <QScreen>
@@ -16,7 +16,6 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QResizeEvent>
-
 
 Manager::Manager(QWidget *parent) :
     QMainWindow(parent),
@@ -32,7 +31,7 @@ Manager::Manager(QWidget *parent) :
     this->readSettings();
 
     // Set window icon
-    this->setWindowIcon(QIcon(":/icon.png"));
+    this->setWindowIcon(QIcon(configuration::images::ICON));
 
     // Disable frame
     this->ui->lineEdit->setFrame(false);
@@ -58,6 +57,7 @@ Manager::Manager(QWidget *parent) :
 Manager::~Manager()
 {
     delete ui;
+    delete view;
     delete validator;
     delete scene;
 }
@@ -80,7 +80,7 @@ void Manager::generateButtonClicked()
 
 void Manager::writeSettings()
 {
-    QSettings settings(Configuration::ORGANIZATION, Configuration::APPLICATION);
+    QSettings settings;
 
     settings.beginGroup("Manager");
     settings.setValue("size", this->size());
@@ -90,7 +90,7 @@ void Manager::writeSettings()
 
 void Manager::readSettings()
 {
-    QSettings settings(Configuration::ORGANIZATION, Configuration::APPLICATION);
+    QSettings settings;
 
     settings.beginGroup("Manager");
     this->resize(settings.value("size", QSize(400, 400)).toSize());

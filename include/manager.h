@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class Manager;
+namespace Ui
+{
+    class Manager;
 }
 
 class QIntValidator;
