@@ -26,6 +26,7 @@ public:
     Q_SLOT void generateButtonClicked();
 
 protected:
+    void init();
     void writeSettings();
     void readSettings();
 
