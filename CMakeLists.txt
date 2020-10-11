@@ -42,7 +42,7 @@ SET(SOURCES
     src/logicalsearchrunnable.cpp
 )
 
-qt5_wrap_ui(FORMS include/manager.ui)
+qt5_wrap_ui(SOURCES include/manager.ui)
 
 #_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_
 
