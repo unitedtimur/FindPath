@@ -1,6 +1,8 @@
-#include "movescene.h"
-#include "configuration.h"
-#include "bfslogic.h"
+#include "include/movescene.h"
+#include "include/configuration.h"
+#include "include/ilogicalsearch.h"
+#include "include/bfslogic.h"
+#include "include/logicalsearchrunnable.h"
 
 #include <QObject>
 #include <QGraphicsSceneMouseEvent>
@@ -11,22 +13,17 @@
 #include <vector>
 #include <list>
 
-#include "bfsrunnable.h"
-
 using namespace std;
 
 MoveScene::MoveScene(QObject* parent) :
     QGraphicsScene(parent),
-    bfsLogic(nullptr)
+    m_alogirthm(Algorithm::BFS)
 {
 }
 
 MoveScene::~MoveScene()
 {
-    if (!bfsLogic)
-        delete bfsLogic;
-
-    for (auto& row : this->cells)
+    for (auto& row : m_cells)
     {
         for (auto& column : row)
             delete column;
@@ -56,12 +53,12 @@ void MoveScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             startCell->setStatus(GraphicsCell::Status::JustCell);
             rect->setStatus(GraphicsCell::Status::StartCell);
 
-            for (const auto& it : this->memorablePathCells)
+            for (const auto& it : m_memorablePathCells)
             {
                 it->setStatus(GraphicsCell::Status::JustCell);
             }
 
-            memorablePathCells.clear();
+            m_memorablePathCells.clear();
         }
     }
 }
@@ -80,24 +77,24 @@ void MoveScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if (startCell != finishCell && !(finishCell->getStatus() & GraphicsCell::Status::BarrierCell))
     {
-        for (const auto& it : this->memorablePathCells)
+        for (const auto& it : m_memorablePathCells)
         {
             it->setStatus(GraphicsCell::Status::JustCell);
         }
 
-        memorablePathCells.clear();
+        m_memorablePathCells.clear();
 
         finishCell->setStatus(GraphicsCell::Status::FinishCell);
 
-        memorablePathCells.push_back(finishCell);
+        m_memorablePathCells.push_back(finishCell);
 
-        this->bfs();
+        this->logicalSearch();
     }
 }
 
 GraphicsCell *MoveScene::findCell(const GraphicsCell::Status &status)
 {
-    for (const auto& row : this->getCells())
+    for (const auto& row : m_cells)
     {
         for (const auto& column : row)
         {
@@ -109,53 +106,63 @@ GraphicsCell *MoveScene::findCell(const GraphicsCell::Status &status)
     return nullptr;
 }
 
-void MoveScene::bfs()
+void MoveScene::logicalSearch()
 {
     emit clearHandleError();
 
-    bfsLogic = new BFSLogic(this->cells, this->memorablePathCells, this->w, this->h);
+    QSharedPointer<Ilogicalsearch> search;
 
-    // Connect bfsLogic for handle error with slot by MoveScene
-    connect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
+    switch (m_alogirthm)
+    {
+    case Algorithm::BFS:
+        search = QSharedPointer<Ilogicalsearch>(new BFSLogic(m_cells, m_memorablePathCells, m_w, m_h));
+        // Connect bfsLogic for handle error with slot by MoveScene
+        connect(static_cast<BFSLogic*>(search.data()), &BFSLogic::handleError, this, &MoveScene::handledError);
+        break;
 
-    BFSRunnable bfsRunnable(bfsLogic);
-    bfsRunnable.setAutoDelete(false);
+    case Algorithm::DFS:
+        // TODO here
+        break;
 
-    QThreadPool* threadPool = QThreadPool::globalInstance();
-    threadPool->start(&bfsRunnable);
+    case Algorithm::DIJKSTRA:
+        // TODO here
+        break;
 
-    threadPool->waitForDone();
+    default:
+        search = QSharedPointer<Ilogicalsearch>(new BFSLogic(m_cells, m_memorablePathCells, m_w, m_h));
+        // Connect bfsLogic for handle error with slot by MoveScene
+        connect(static_cast<BFSLogic*>(search.data()), &BFSLogic::handleError, this, &MoveScene::handledError);
+        break;
+    }
 
-    // Disconnect bfcLogic handle error signal with handledError slot
-    disconnect(bfsLogic, &BFSLogic::handleError, this, &MoveScene::handledError);
-
-    delete bfsLogic;
+    QThreadPool::globalInstance()->start(new LogicalSearchRunnable(search));
+    QThreadPool::globalInstance()->waitForDone();
 }
 
 void MoveScene::generatedField(const qint32& w, const qint32& h)
 {
     this->clear();
-    this->w = w;
-    this->h = h;
+    m_w = w;
+    m_h = h;
 
-    memorablePathCells.clear();
+    m_memorablePathCells.clear();
 
-    cells.resize(this->h);
+    m_cells.resize(m_h);
 
-    for (qint32 y = 0; y < this->h; ++y)
+    for (qint32 y = 0; y < m_h; ++y)
     {
-        cells[y].resize(this->w);
+        m_cells[y].resize(m_w);
 
-        for (qint32 x = 0; x < this->w; ++x)
+        for (qint32 x = 0; x < m_w; ++x)
         {
-            cells[y][x] = new GraphicsCell(GraphicsCell::Status::JustCell);
-            cells[y][x]->setRect(QRectF(x * Configuration::SIZE_CELL,
-                                        y * Configuration::SIZE_CELL,
-                                        Configuration::SIZE_CELL,
-                                        Configuration::SIZE_CELL));
-            cells[y][x]->setX(x);
-            cells[y][x]->setY(y);
-            this->addItem(cells[y][x]);
+            m_cells[y][x] = new GraphicsCell(GraphicsCell::Status::JustCell);
+            m_cells[y][x]->setRect(QRectF(x * configuration::SIZE_CELL,
+                                        y * configuration::SIZE_CELL,
+                                        configuration::SIZE_CELL,
+                                        configuration::SIZE_CELL));
+            m_cells[y][x]->setX(x);
+            m_cells[y][x]->setY(y);
+            this->addItem(m_cells[y][x]);
         }
     }
 
@@ -171,9 +178,7 @@ void MoveScene::handledError(const QString &error)
 
 void MoveScene::generateBarriers()
 {
-    const auto parse = this->getCells();
-
-    for (const auto& row : parse)
+    for (const auto& row : m_cells)
     {
         for (const auto& column : row)
         {
@@ -183,9 +188,4 @@ void MoveScene::generateBarriers()
             }
         }
     }
-}
-
-QVector<QVector<GraphicsCell*>>& MoveScene::getCells()
-{
-    return cells;
 }

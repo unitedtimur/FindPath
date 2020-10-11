@@ -1,5 +1,5 @@
-#include "graphicscell.h"
-#include "configuration.h"
+#include "include/graphicscell.h"
+#include "include/configuration.h"
 
 GraphicsCell::GraphicsCell(const Status& status):
     QGraphicsRectItem(nullptr)

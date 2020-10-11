@@ -2,18 +2,24 @@
 #define MOVESCENE_H
 
 #include <QGraphicsScene>
-#include "graphicscell.h"
+#include "include/graphicscell.h"
 
 class QObject;
 class QWheelEvent;
 class GraphicsCell;
-class BFSLogic;
 
 class MoveScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
+    enum class Algorithm
+    {
+        BFS = 0x00,
+        DFS,
+        DIJKSTRA
+    };
+
     explicit MoveScene(QObject* parent = nullptr);
     ~MoveScene();
 
@@ -24,22 +30,20 @@ public:
     void generatedField(const qint32& w, const qint32& h);
 
 protected:
-    QVector<QVector<GraphicsCell*>>& getCells();
-
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
     GraphicsCell* findCell(const GraphicsCell::Status& status);
 
     void generateBarriers();
-    void bfs();
+    void logicalSearch();
 
 private:
-    QVector<QVector<GraphicsCell*>> cells;
-    QVector<GraphicsCell*> memorablePathCells;
-    qint32 w;
-    qint32 h;
-    BFSLogic* bfsLogic;
+    QVector<QVector<GraphicsCell*>> m_cells;
+    QVector<GraphicsCell*> m_memorablePathCells;
+    qint32 m_w;
+    qint32 m_h;
+    Algorithm m_alogirthm;
 };
 
 #endif // MOVESCENE_H
